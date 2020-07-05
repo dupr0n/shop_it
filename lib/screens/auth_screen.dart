@@ -98,7 +98,8 @@ class AuthCard extends StatefulWidget {
 class _AuthCardState extends State<AuthCard> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   AuthMode _authMode = AuthMode.Login;
-  FocusNode _pass, _repass;
+  final _pass = FocusNode();
+  final _repass = FocusNode();
   Map<String, String> _authData = {
     'email': '',
     'password': '',

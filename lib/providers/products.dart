@@ -18,10 +18,13 @@ class Products with ChangeNotifier {
 
   Product findById(String id) => items.firstWhere((prd) => prd.id == id);
 
-  Future<void> initialize() async {
+  Future<void> initialize([bool filterById = false]) async {
     try {
+      final stringExt =
+          filterById ? '&orderBy="creatorId"&equalTo="$userId"' : '';
       String url =
-          'https://flutter-shop-it.firebaseio.com/products.json?auth=$authToken';
+          'https://flutter-shop-it.firebaseio.com/products.json?auth=$authToken' +
+              stringExt;
       final res = await http.get(url);
       url =
           'https://flutter-shop-it.firebaseio.com/userFavs/$userId.json?auth=$authToken';
@@ -37,14 +40,13 @@ class Products with ChangeNotifier {
               id: prdId,
               imageUrl: prdData['imageUrl'],
               title: prdData['title'],
-              isFavorite: favData[prdId],
+              isFavorite: favData == null ? false : favData[prdId],
             ),
           ));
       _items = processedData;
       notifyListeners();
     } catch (err) {
       print(err);
-      throw err;
     }
   }
 
@@ -59,6 +61,7 @@ class Products with ChangeNotifier {
           'description': prd.description,
           'price': prd.price,
           'imageUrl': prd.imageUrl,
+          'creatorId': userId,
         }),
       );
       var pro = Product(
