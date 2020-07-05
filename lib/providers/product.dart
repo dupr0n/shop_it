@@ -15,17 +15,21 @@ class Product with ChangeNotifier {
     @required this.title,
     this.isFavorite = false,
   });
-  void toggleIsFavorite() {
-    final url = 'https://flutter-shop-it.firebaseio.com/products/$id.json';
-    http
-        .patch(
-      url,
-      body: json.encode({'isFavorite': !isFavorite}),
-    )
-        .catchError((err) {
-      print('$err\n On toggling favorite');
-    });
+
+  Future<void> toggleIsFavorite(String token, String userId) async {
+    final url =
+        'https://flutter-shop-it.firebaseio.com/userFavs/$userId/$id.json?auth=$token';
     isFavorite = !isFavorite;
     notifyListeners();
+    try {
+      await http.put(
+        url,
+        body: json.encode(isFavorite),
+      );
+    } catch (err) {
+      print(err);
+      isFavorite = !isFavorite;
+      notifyListeners();
+    }
   }
 }

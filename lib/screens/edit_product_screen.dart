@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import './user_products_screen.dart';
 import '../providers/products.dart';
 import '../providers/product.dart';
+import '../widgets/alert_card.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/edit-product-screen';
@@ -72,23 +73,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 try {
                   await productData.addProduct(_editedProduct);
                 } catch (error) {
-                  await showDialog(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                            title: Icon(Icons.error, size: 40),
-                            content: Text(
-                              'An error occured somewhere...',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            actions: <Widget>[
-                              FlatButton(
-                                onPressed: () => Navigator.of(ctx).popUntil(
-                                    ModalRoute.withName(
-                                        UserProductsScreen.routeName)),
-                                child: Text('Okay'),
-                              )
-                            ],
-                          ));
+                  alertCard('Something went wrong somewhere...', context,
+                      UserProductsScreen.routeName);
                 }
               } else
                 await productData.editProduct(

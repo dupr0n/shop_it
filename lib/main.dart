@@ -25,30 +25,45 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => Auth()),
-        ChangeNotifierProvider(create: (ctx) => Products()),
-        ChangeNotifierProvider(create: (ctx) => Cart()),
-        ChangeNotifierProvider(create: (ctx) => Orders()),
-      ],
-      child: MaterialApp(
-        title: 'Shop It!',
-        theme: ThemeData(
-          brightness: Brightness.dark,
-          primaryColor: Colors.purple,
-          primaryColorDark: Colors.purple[800],
-          primarySwatch: Colors.purple,
-          accentColor: Colors.deepOrange,
-          fontFamily: 'Lato',
+        ChangeNotifierProxyProvider<Auth, Products>(
+          update: (ctx, auth, prevProducts) => Products(
+            auth.token,
+            auth.userId,
+            prevProducts == null ? [] : prevProducts.items,
+          ),
+          create: (ctx) => Products('', '', []),
         ),
-        home: AuthScreen(),
-        routes: {
-          AuthScreen.routeName: (_) => AuthScreen(),
-          ProductsOverviewScreen.routeName: (_) => ProductsOverviewScreen(),
-          ProductDetailScreen.routeName: (_) => ProductDetailScreen(),
-          CartScreen.routeName: (_) => CartScreen(),
-          OrdersScreen.routeName: (_) => OrdersScreen(),
-          UserProductsScreen.routeName: (_) => UserProductsScreen(),
-          EditProductScreen.routeName: (_) => EditProductScreen(),
-        },
+        ChangeNotifierProvider(create: (ctx) => Cart()),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          update: (ctx, auth, prevOrders) => Orders(
+            auth.token,
+            prevOrders == null ? [] : prevOrders.orders,
+          ),
+          create: (ctx) => Orders('', []),
+        ),
+      ],
+      child: Consumer<Auth>(
+        builder: (_, authData, __) => MaterialApp(
+          title: 'Shop It!',
+          theme: ThemeData(
+            brightness: Brightness.dark,
+            primaryColor: Colors.purple,
+            primaryColorDark: Colors.purple[800],
+            primarySwatch: Colors.purple,
+            accentColor: Colors.deepOrange,
+            fontFamily: 'Lato',
+          ),
+          home: authData.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          routes: {
+            AuthScreen.routeName: (_) => AuthScreen(),
+            ProductsOverviewScreen.routeName: (_) => ProductsOverviewScreen(),
+            ProductDetailScreen.routeName: (_) => ProductDetailScreen(),
+            CartScreen.routeName: (_) => CartScreen(),
+            OrdersScreen.routeName: (_) => OrdersScreen(),
+            UserProductsScreen.routeName: (_) => UserProductsScreen(),
+            EditProductScreen.routeName: (_) => EditProductScreen(),
+          },
+        ),
       ),
     );
   }

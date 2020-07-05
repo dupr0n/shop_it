@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth.dart';
+import '../widgets/alert_card.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -115,17 +116,19 @@ class _AuthCardState extends State<AuthCard> {
       _isLoading = true;
     });
     if (_authMode == AuthMode.Login) {
-      await Provider.of<Auth>(context, listen: false).signUpIn(
+      final err = await Provider.of<Auth>(context, listen: false).signUpIn(
         email: _authData['email'],
         password: _authData['password'],
         isSignUp: false,
       );
+      if (err != null) alertCard(err, context);
     } else {
-      await Provider.of<Auth>(context, listen: false).signUpIn(
+      final err = await Provider.of<Auth>(context, listen: false).signUpIn(
         email: _authData['email'],
         password: _authData['password'],
         isSignUp: true,
       );
+      if (err != null) alertCard(err, context);
     }
     setState(() {
       _isLoading = false;
