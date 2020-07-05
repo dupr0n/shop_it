@@ -107,8 +107,9 @@ class _AuthCardState extends State<AuthCard>
   };
   var _isLoading = false;
   final _passwordController = TextEditingController();
-  //? AnimationController _controller;
+  AnimationController _controller;
   //? Animation<Size> _signInUpTransition;
+  Animation<double> _opacityAnimation;
 
   Future<void> _submit() async {
     if (!_formKey.currentState.validate()) {
@@ -144,24 +145,26 @@ class _AuthCardState extends State<AuthCard>
       setState(() {
         _authMode = AuthMode.Signup;
       });
-      //? _controller.forward();
+      _controller.forward();
     } else {
       setState(() {
         _authMode = AuthMode.Login;
       });
-      //? _controller.reverse();
+      _controller.reverse();
     }
   }
 
   @override
   void initState() {
-    //? _controller =
-    //?     AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    _controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
     //? _signInUpTransition = Tween<Size>(
     //?   begin: Size(double.infinity, 260),
     //?   end: Size(double.infinity, 320),
     //? ).animate(CurvedAnimation(parent: _controller, curve: Curves.linear));
     //? _signInUpTransition.addListener(() => setState(() {}));
+    _opacityAnimation = Tween(begin: 0.0, end: 1.0)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
     super.initState();
   }
 
@@ -174,7 +177,7 @@ class _AuthCardState extends State<AuthCard>
       ),
       elevation: 8.0,
       child: AnimatedContainer(
-        curve: Curves.linear,
+        curve: Curves.easeIn,
         duration: Duration(milliseconds: 300),
         height: _authMode == AuthMode.Signup ? 320 : 260,
         constraints:
@@ -218,21 +221,32 @@ class _AuthCardState extends State<AuthCard>
                   onFieldSubmitted: (_) =>
                       FocusScope.of(context).requestFocus(_repass),
                 ),
-                if (_authMode == AuthMode.Signup)
-                  TextFormField(
-                    enabled: _authMode == AuthMode.Signup,
-                    decoration: InputDecoration(labelText: 'Confirm Password'),
-                    obscureText: true,
-                    validator: _authMode == AuthMode.Signup
-                        ? (value) {
-                            return (value != _passwordController.text)
-                                ? 'Passwords do not match!'
-                                : null;
-                          }
-                        : null,
-                    focusNode: _repass,
-                    textInputAction: TextInputAction.done,
+                AnimatedContainer(
+                  constraints: BoxConstraints(
+                    minHeight: 0.0,
+                    maxHeight: _authMode == AuthMode.Signup ? 120.0 : 0.0,
                   ),
+                  curve: Curves.easeIn,
+                  duration: Duration(milliseconds: 300),
+                  child: FadeTransition(
+                    opacity: _opacityAnimation,
+                    child: TextFormField(
+                      enabled: _authMode == AuthMode.Signup,
+                      decoration:
+                          InputDecoration(labelText: 'Confirm Password'),
+                      obscureText: true,
+                      validator: _authMode == AuthMode.Signup
+                          ? (value) {
+                              return (value != _passwordController.text)
+                                  ? 'Passwords do not match!'
+                                  : null;
+                            }
+                          : null,
+                      focusNode: _repass,
+                      textInputAction: TextInputAction.done,
+                    ),
+                  ),
+                ),
                 SizedBox(
                   height: 20,
                 ),
