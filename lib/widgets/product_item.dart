@@ -14,11 +14,14 @@ class ProductItem extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
       child: GridTile(
-        child: FadeInImage.assetNetwork(
-          placeholder: 'lib/assets/images/shop.png',
-          image: prdData.imageUrl,
-          fit: BoxFit.cover,
-          fadeInCurve: Curves.fastLinearToSlowEaseIn,
+        child: Hero(
+          tag: prdData.id,
+          child: FadeInImage.assetNetwork(
+            placeholder: 'lib/assets/images/shop.png',
+            image: prdData.imageUrl,
+            fit: BoxFit.cover,
+            fadeInCurve: Curves.fastLinearToSlowEaseIn,
+          ),
         ),
         footer: GridTileBar(
           leading: Consumer<Product>(
