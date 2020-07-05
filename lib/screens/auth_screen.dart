@@ -100,7 +100,7 @@ class _AuthCardState extends State<AuthCard> {
   AuthMode _authMode = AuthMode.Login;
   final _pass = FocusNode();
   final _repass = FocusNode();
-  Map<String, String> _authData = {
+  Map<String, dynamic> _authData = {
     'email': '',
     'password': '',
   };

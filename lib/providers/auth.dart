@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Auth with ChangeNotifier {
   String _userId, _token;
@@ -35,6 +36,13 @@ class Auth with ChangeNotifier {
     _expiryDate =
         DateTime.now().add(Duration(seconds: int.parse(resData['expiresIn'])));
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    final userData = json.encode({
+      'token': _token,
+      'userId': _userId,
+      'expiryDate': _expiryDate.toIso8601String(),
+    });
+    prefs.setString('userData', userData);
     if (!isSignUp && resData['error'] != null) {
       switch (resData['error']['message']) {
         case 'EMAIL_NOT_FOUND':
@@ -58,10 +66,26 @@ class Auth with ChangeNotifier {
       return null;
   }
 
-  void logout() {
+  Future<bool> tryAutoLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) return false;
+    final extractedUserData =
+        json.decode(prefs.getString('userData')) as Map<String, dynamic>;
+    final expDate = DateTime.parse(extractedUserData['expiryDate']);
+    if (expDate.isBefore(DateTime.now())) return false;
+    _token = extractedUserData['token'];
+    _userId = extractedUserData['userId'];
+    _expiryDate = expDate;
+    notifyListeners();
+    return true;
+  }
+
+  Future<void> logout() async {
     _userId = null;
     _token = null;
     _expiryDate = null;
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('userData');
   }
 }
