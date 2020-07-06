@@ -108,7 +108,6 @@ class _AuthCardState extends State<AuthCard>
   var _isLoading = false;
   final _passwordController = TextEditingController();
   AnimationController _controller;
-  //? Animation<Size> _signInUpTransition;
   Animation<double> _opacityAnimation;
 
   Future<void> _submit() async {
@@ -158,11 +157,6 @@ class _AuthCardState extends State<AuthCard>
   void initState() {
     _controller =
         AnimationController(vsync: this, duration: Duration(milliseconds: 300));
-    //? _signInUpTransition = Tween<Size>(
-    //?   begin: Size(double.infinity, 260),
-    //?   end: Size(double.infinity, 320),
-    //? ).animate(CurvedAnimation(parent: _controller, curve: Curves.linear));
-    //? _signInUpTransition.addListener(() => setState(() {}));
     _opacityAnimation = Tween(begin: 0.0, end: 1.0)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
     super.initState();
@@ -279,11 +273,5 @@ class _AuthCardState extends State<AuthCard>
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    //? _controller.dispose();
-    super.dispose();
   }
 }

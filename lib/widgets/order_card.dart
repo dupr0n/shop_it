@@ -34,39 +34,41 @@ class _OrderCardState extends State<OrderCard> {
               },
             ),
           ),
-          if (_expanded)
-            Container(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListView(
-                  shrinkWrap: true,
-                  children: widget.order.products
-                      .map((ord) => Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  ord.title,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+          AnimatedContainer(
+            height: _expanded ? (widget.order.products.length * 45.0 + 10) : 0,
+            curve: Curves.easeIn,
+            duration: Duration(milliseconds: 300),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListView(
+                shrinkWrap: true,
+                children: widget.order.products
+                    .map((ord) => Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                ord.title,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                Text(
-                                  '${ord.quantity}x \$${ord.price}',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.grey,
-                                  ),
+                              ),
+                              Text(
+                                '${ord.quantity}x \$${ord.price}',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey,
                                 ),
-                              ],
-                            ),
-                          ))
-                      .toList(),
-                ),
+                              ),
+                            ],
+                          ),
+                        ))
+                    .toList(),
               ),
-            )
+            ),
+          )
         ],
       ),
     );
