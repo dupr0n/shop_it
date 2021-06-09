@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import './user_products_screen.dart';
+import 'user_products_screen.dart';
 import '../providers/products.dart';
 import '../providers/product.dart';
 import '../widgets/alert_card.dart';
@@ -48,8 +48,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       _init = false;
       productId = ModalRoute.of(context).settings.arguments as String;
       if (productId != null) {
-        _editedProduct =
-            Provider.of<Products>(context, listen: false).findById(productId);
+        _editedProduct = Provider.of<Products>(context, listen: false).findById(productId);
         _imageUrlController.text = _editedProduct.imageUrl;
       }
     }
@@ -73,38 +72,36 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 try {
                   await productData.addProduct(_editedProduct);
                 } catch (error) {
-                  alertCard('Something went wrong somewhere...', context,
-                      UserProductsScreen.routeName);
+                  alertCard(
+                      'Something went wrong somewhere...', context, UserProductsScreen.routeName);
                 }
               } else
-                await productData.editProduct(
-                    id: productId, prd: _editedProduct);
+                await productData.editProduct(id: productId, prd: _editedProduct);
               setState(() => _isLoading = false);
               Navigator.of(context).pop();
             } else
               showDialog(
                   context: context,
-                  child: AlertDialog(
-                    title: Column(
-                      children: <Widget>[
-                        Icon(Icons.error, size: 75),
-                        SizedBox(height: 20),
-                        Text(
-                            'You haven\'t filled out all fields! Exit anyway?'),
-                      ],
-                    ),
-                    actions: <Widget>[
-                      FlatButton(
-                        child: Text('Yes'),
-                        onPressed: () => Navigator.of(context).popUntil(
-                            ModalRoute.withName(UserProductsScreen.routeName)),
-                      ),
-                      FlatButton(
-                        child: Text('No'),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                    ],
-                  ));
+                  builder: (ctx) => AlertDialog(
+                        title: Column(
+                          children: <Widget>[
+                            Icon(Icons.error, size: 75),
+                            SizedBox(height: 20),
+                            Text('You haven\'t filled out all fields! Exit anyway?'),
+                          ],
+                        ),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text('Yes'),
+                            onPressed: () => Navigator.of(context)
+                                .popUntil(ModalRoute.withName(UserProductsScreen.routeName)),
+                          ),
+                          FlatButton(
+                            child: Text('No'),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ],
+                      ));
           },
         ),
         title: Text(_editedProduct.id == null ? 'Add Product' : 'Edit Product'),
@@ -127,11 +124,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       initialValue: _editedProduct.title,
                       decoration: InputDecoration(labelText: 'Title'),
                       textInputAction: TextInputAction.next,
-                      onFieldSubmitted: (_) =>
-                          FocusScope.of(context).requestFocus(_priceFocusNode),
-                      validator: (value) => value.isEmpty
-                          ? '\'\' isn\'t exactly a great name for this'
-                          : null,
+                      onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_priceFocusNode),
+                      validator: (value) =>
+                          value.isEmpty ? '\'\' isn\'t exactly a great name for this' : null,
                       onSaved: (newValue) => _editedProduct = Product(
                         price: _editedProduct.price,
                         description: _editedProduct.description,
@@ -142,19 +137,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       ),
                     ),
                     TextFormField(
-                      initialValue: _editedProduct.price == null
-                          ? null
-                          : _editedProduct.price.toString(),
+                      initialValue:
+                          _editedProduct.price == null ? null : _editedProduct.price.toString(),
                       decoration: InputDecoration(labelText: 'Price'),
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.number,
                       focusNode: _priceFocusNode,
-                      onFieldSubmitted: (_) => FocusScope.of(context)
-                          .requestFocus(_descriptionFocusNode),
-                      validator: (value) =>
-                          (value.isEmpty || double.parse(value) < 0)
-                              ? 'Won\'t want to sell this for free, right?'
-                              : null,
+                      onFieldSubmitted: (_) =>
+                          FocusScope.of(context).requestFocus(_descriptionFocusNode),
+                      validator: (value) => (value.isEmpty || double.parse(value) < 0)
+                          ? 'Won\'t want to sell this for free, right?'
+                          : null,
                       onSaved: (newValue) => _editedProduct = Product(
                         price: double.parse(newValue),
                         description: _editedProduct.description,
@@ -170,9 +163,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       maxLines: 3,
                       keyboardType: TextInputType.multiline,
                       focusNode: _descriptionFocusNode,
-                      validator: (value) => value.isEmpty
-                          ? 'You know you can\'t leave this empty...'
-                          : null,
+                      validator: (value) =>
+                          value.isEmpty ? 'You know you can\'t leave this empty...' : null,
                       onSaved: (newValue) => _editedProduct = Product(
                         price: _editedProduct.price,
                         description: newValue,
@@ -198,8 +190,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           child: _imageUrlController.text.isEmpty
                               ? Text('Enter a URL')
                               : FittedBox(
-                                  child:
-                                      Image.network(_imageUrlController.text),
+                                  child: Image.network(_imageUrlController.text),
                                   fit: BoxFit.cover,
                                 ),
                         ),
@@ -212,10 +203,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             controller: _imageUrlController,
                             focusNode: _imageUrlFocusNode,
                             onFieldSubmitted: (_) => _saveForm,
-                            validator: (value) =>
-                                (value.isEmpty || !value.startsWith('http'))
-                                    ? 'A man\'s gotta see a pic'
-                                    : null,
+                            validator: (value) => (value.isEmpty || !value.startsWith('http'))
+                                ? 'A man\'s gotta see a pic'
+                                : null,
                             onSaved: (newValue) => _editedProduct = Product(
                               price: _editedProduct.price,
                               description: _editedProduct.description,
